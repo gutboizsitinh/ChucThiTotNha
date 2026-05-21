@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lời Chúc Thi Tốt Nhiệt Huyết</title>
+    <style>
+        /* 
+           CÁCH 1: Nếu font đã được cài vào máy tính của bạn, trình duyệt sẽ tự nhận dạng 'JetBrains Mono'.
+           CÁCH 2: Nếu bạn muốn gọi trực tiếp file font đã tải (để cùng thư mục với file HTML), 
+           hãy xóa dấu và ở đoạn dưới đây, rồi đổi 'ten-file-font-cua-ban.ttf' thành tên file thực tế.
+        */
+        
+        /*
+        @font-face {
+            font-family: 'JetBrains Mono Local';
+            src: url('ten-file-font-cua-ban.ttf') format('truetype');
+            font-weight: 800;
+        }
+        */
+
+        /* Link dự phòng từ Google Fonts để đảm bảo font luôn hiển thị đúng trên mọi máy */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #2b0000 0%, #000000 80%);
+            overflow: hidden;
+            /* Ưu tiên gọi font Local, sau đó đến font hệ thống, cuối cùng là font dự phòng */
+            font-family: 'JetBrains Mono Local', 'JetBrains Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #sparkCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .text-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Tăng khoảng cách một chút vì font monospace thường có ký tự cao */
+        }
+
+        .fire-line {
+            font-size: 4rem;
+            line-height: 1.1;
+            text-transform: uppercase;
+            font-weight: 800; /* Dùng weight 800 (ExtraBold) của JetMono cho nét chữ dày dặn */
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+
+        .text-small {
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+        }
+
+        .char {
+            display: inline-block;
+            color: #ffffe0;
+            mix-blend-mode: screen; 
+            animation: flame-flicker infinite alternate;
+        }
+
+        /* Hiệu ứng lửa được tinh chỉnh lại cho nét chữ của JetMono */
+        @keyframes flame-flicker {
+            0% {
+                text-shadow: 
+                    0 -2px 4px #ffffe0,
+                    2px -10px 15px #ffeb3b,
+                    -4px -20px 25px #ff9800,
+                    4px -35px 35px #f44336,
+                    -4px -50px 45px #b71c1c;
+                transform: translateY(0px) scaleY(1);
+            }
+            50% {
+                text-shadow: 
+                    0 -4px 6px #ffffff,
+                    -2px -15px 20px #ffeb3b,
+                    4px -25px 30px #ff9800,
+                    -4px -40px 40px #f44336,
+                    2px -60px 55px #b71c1c;
+                transform: translateY(-2px) scaleY(1.03); 
+            }
+            100% {
+                text-shadow: 
+                    0 -2px 4px #ffffe0,
+                    2px -12px 18px #ffeb3b,
+                    -2px -22px 28px #ff9800,
+                    2px -38px 38px #f44336,
+                    -2px -55px 50px #b71c1c;
+                transform: translateY(1px) scaleY(0.97);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .fire-line {
+                font-size: 2rem;
+                white-space: normal;
+            }
+            .text-small {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="sparkCanvas"></canvas>
+
+    <div class="text-container">
+        <div class="fire-line">Quang Minh</div>
+        <div class="fire-line text-small">Chúc Bạn</div>
+        <div class="fire-line">Trương Hải Yến</div>
+        <div class="fire-line">Thi Tốt</div>
+    </div>
+
+    <script>
+        // Tách chữ và áp dụng hiệu ứng nhấp nháy ngẫu nhiên
+        const lines = document.querySelectorAll('.fire-line');
+        
+        lines.forEach(line => {
+            const text = line.textContent;
+            line.innerHTML = '';
+            
+            [...text].forEach(char => {
+                if(char === ' ') {
+                    line.innerHTML += '&nbsp;';
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.className = 'char';
+                    
+                    const duration = 0.6 + Math.random() * 0.6; 
+                    const delay = -(Math.random() * 2); 
+                    
+                    span.style.animationDuration = `${duration}s`;
+                    span.style.animationDelay = `${delay}s`;
+                    
+                    line.appendChild(span);
+                }
+            });
+        });
+
+        // Vẽ tàn lửa bay
+        const canvas = document.getElementById('sparkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const sparks = [];
+        const maxSparks = 60; 
+
+        for(let i = 0; i < maxSparks; i++) {
+            sparks.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1,
+                speedY: Math.random() * 2 + 1,
+                speedX: (Math.random() - 0.5) * 2,
+                opacity: Math.random(),
+                fadeRate: Math.random() * 0.015 + 0.005
+            });
+        }
+
+        function animateSparks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            sparks.forEach(spark => {
+                ctx.beginPath();
+                ctx.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, ${Math.floor(Math.random() * 100) + 100}, 0, ${spark.opacity})`;
+                ctx.fill();
+
+                spark.y -= spark.speedY;
+                spark.x += Math.sin(spark.y / 20) * spark.speedX; 
+                spark.opacity -= spark.fadeRate;
+
+                if(spark.opacity <= 0 || spark.y < 0) {
+                    spark.y = canvas.height + 10;
+                    spark.x = Math.random() * canvas.width;
+                    spark.opacity = Math.random() * 0.5 + 0.5;
+                }
+            });
+            
+            requestAnimationFrame(animateSparks);
+        }
+
+        animateSparks();
+    </script>
+
+</body>
+</html>
